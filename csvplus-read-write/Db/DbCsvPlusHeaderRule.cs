@@ -26,10 +26,10 @@ namespace csvplus_read_write.Db
         private DbCsvPlusError oError = null;
 
         // lookup via fld or iPos --- iPos is probably faster
-        public string columnName = "";
-        public int columnPosition = 0;
-        public Type dataType = Type.GetType("System.String");
-        public string dataTypeFormat = "";
+        private string columnName = "";
+        private int columnPosition = 0;
+        private Type dataType = Type.GetType("System.String");
+        private string dataTypeFormat = "";
 
         public DbCsvHeaderRule(DbCsvPlusRules oRules, DbCsvPlusError oError, string fld, int iPos, string dataType, string dataTypeFormat)
         {
@@ -43,6 +43,15 @@ namespace csvplus_read_write.Db
             }
             this.dataTypeFormat = dataTypeFormat;
         }
+
+        #region " Properties "
+
+        public String ColumnName {get { return columnName; } set { columnName = value;} }
+        public int ColumnPosition {get { return columnPosition; } set { columnPosition = value;} }
+        public Type DataType {get { return dataType; } set { dataType = value;} }
+        public String DataTypeFormat {get { return dataTypeFormat; } set { dataTypeFormat = value;} }
+
+        #endregion
 
         public bool ProcessData(string dataValue, ref object dataObject)
         {

@@ -77,23 +77,6 @@ namespace csvplus_read_write.Db
                             val = val + div + append;
                         }
                     }
-
-
-
-
-                    /*
-                    if(val.EndsWith(div) == true) {
-                        if((ForceDiv == true) && (append == ""))
-                            val = val + div;
-                        else
-                            val = val + append;
-
-                    } else {
-                        val = val + div + append;
-                    }
-                    */
-
-
                 }
             }
 		}
@@ -559,7 +542,7 @@ namespace csvplus_read_write.Db
                 //      this occurs in some older BCEsis entries ...
                 isDiscard = false;
                 if (oRules != null)
-                    isDiscard = oRules.discardOnToFewDataFlds;                    
+                    isDiscard = oRules.DiscardOnToFewDataFlds;                    
 
                 if (oError != null) {
                     oError.AddFlag_DataFldTooFew();
@@ -571,7 +554,7 @@ namespace csvplus_read_write.Db
                 //      this entry probably has a bad comma causing an extra field
                 isDiscard = false;
                 if (oRules != null)
-                    isDiscard = oRules.discardOnToManyDataFlds;                    
+                    isDiscard = oRules.DiscardOnToManyDataFlds;                    
 
                 if (oError != null) {
                     oError.AddFlag_DataFldTooMany();
@@ -602,17 +585,17 @@ namespace csvplus_read_write.Db
                 string sType = "System.String";
                 string sFormat = "";
 
-                if (isRequired && oRules.aRequiredHeaders != null)
+                if (isRequired && oRules.RequiredHeadersSet != null)
                 {
-                    for (int ix = 0; ix < oRules.aRequiredHeaders.Length; ix++)
+                    for (int ix = 0; ix < oRules.RequiredHeadersSet.Length; ix++)
                     {
-                        if (oRules.aRequiredHeaders[ix].ToUpper() == fld.ToUpper())
+                        if (oRules.RequiredHeadersSet[ix].ToUpper() == fld.ToUpper())
                         {
-                            if (oRules.aForceDataTypes != null)
-                                sType = oRules.aForceDataTypes[ix];
+                            if (oRules.ForceDataTypesSet != null)
+                                sType = oRules.ForceDataTypesSet[ix];
 
-                            if (oRules.aDataTypeFormats != null)
-                                sFormat = oRules.aDataTypeFormats[ix];
+                            if (oRules.DataTypeFormatsSet != null)
+                                sFormat = oRules.DataTypeFormatsSet[ix];
                             break;
                         }
                     }
@@ -648,7 +631,7 @@ namespace csvplus_read_write.Db
                         oError.AppendToLog("Duplicate header name: " + fld);
                     }
                     if (oRules != null) {
-                        keepGoing = oRules.keepHeaderDuplicates;
+                        keepGoing = oRules.KeepHeaderDuplicates;
                     }
                 }
 
@@ -660,7 +643,7 @@ namespace csvplus_read_write.Db
                     }
                     if (oRules != null) {
                         if (keepGoing)
-                            keepGoing = oRules.keepHeaderBadnames;
+                            keepGoing = oRules.KeepHeaderBadnames;
                     }
                 }
 
@@ -675,16 +658,16 @@ namespace csvplus_read_write.Db
                     // Maintain counts - we've already filter out duplication, so this should work
                     bool isNew = true;
                     bool isRequired = false;
-                    if (oRules != null && oRules.aRequiredHeaders != null) {
-                        if (oRules.aRequiredHeaders.Contains(fld)) {
+                    if (oRules != null && oRules.RequiredHeadersSet != null) {
+                        if (oRules.RequiredHeadersSet.Contains(fld)) {
                             reqFound++;
                             isNew = false;
                             isRequired = true;
                         }
                     }
 
-                    if (oRules != null && oRules.aOptionalHeaders != null) {
-                        if (oRules.aOptionalHeaders.Contains(fld)) {
+                    if (oRules != null && oRules.OptionalHeadersSet != null) {
+                        if (oRules.OptionalHeadersSet.Contains(fld)) {
                             optFound++;
                             isNew = false;
                         }
@@ -710,26 +693,26 @@ namespace csvplus_read_write.Db
                 if (newFound > 0) {
                     if (oError != null) {
                         oError.AddFlag_HeaderNewWarning();
-                        oError.AppendToLog("New header(s) found: " + data + "   (expected: " + oRules._requiredHeaders + "," + oRules._optionalHeaders + ")");
+                        oError.AppendToLog("New header(s) found: " + data + "   (expected: " + oRules.RequiredHeaders + "," + oRules.OptionalHeaders + ")");
                     }
                 }
 
                 // Check and log required header issues
-                if (oRules.aRequiredHeaders != null) {
-                    if (reqFound != oRules.aRequiredHeaders.Length) {
+                if (oRules.RequiredHeadersSet != null) {
+                    if (reqFound != oRules.RequiredHeadersSet.Length) {
                         if (oError != null) {
                             oError.AddFlag_HeaderRequiredMissing();
-                            oError.AppendToLog("Missing required headers: " + data + "   (required: " + oRules._requiredHeaders + ")");
+                            oError.AppendToLog("Missing required headers: " + data + "   (required: " + oRules.RequiredHeaders + ")");
                         }
                     }
                 }
 
                 // Check and log additonal header issues
-                if (oRules.aOptionalHeaders != null) {
-                    if (optFound != oRules.aOptionalHeaders.Length) {
+                if (oRules.OptionalHeadersSet != null) {
+                    if (optFound != oRules.OptionalHeadersSet.Length) {
                         if (oError != null) {
                             oError.AddFlag_HeaderOptionalMissing();
-                            oError.AppendToLog("Warning missing optional headers: " + data + "   (optionals: " + oRules._optionalHeaders + ")");
+                            oError.AppendToLog("Warning missing optional headers: " + data + "   (optionals: " + oRules.OptionalHeaders + ")");
                         }
                     }
                 }
@@ -827,7 +810,7 @@ namespace csvplus_read_write.Db
                     } else {
                         // OK, lets get a rule
                         bool setWithRule = false;
-                        if (iLine == firstDataLine || !oRules.ruleCheckOnlyFirstDataLine) {
+                        if (iLine == firstDataLine || !oRules.CheckOnlyFirstDataLine) {
 
                             DbCsvHeaderRule oHeaderRule = oRules.GetHeaderRule(iCol);
                             if (oHeaderRule != null) {

@@ -27,13 +27,23 @@ namespace csvplus_read_write.Db
     public class DbCsvPlusError
     {
         // This object tracks issues in the CSV file
-        public DataTable oDtErr = null;                     // oDtErr stores the rows that have issues
-        public string logMsg = "";                          // msg log to append issues messages to
-        public Dictionary<String, Int32> errorFlags = null; // flag keys and occurance count
+        private DataTable oDtErr = null;                     // oDtErr stores the rows that have issues
+        private string logMsg = "";                          // msg log to append issues messages to
+        private Dictionary<String, Int32> errorFlags = null; // flag keys and occurance count
 
         public DbCsvPlusError() {
             errorFlags = new Dictionary<string, int>();
         }
+
+        #region " Properties "
+
+        public DataTable ErrorDataTable {get { return oDtErr; }}
+
+        public Dictionary<String, Int32> ErrorFlagSet {get { return errorFlags; }}
+
+        public String ErrorLog {get { return logMsg; }}
+
+        #endregion
 
         #region " Add flag " 
 
