@@ -76,85 +76,13 @@ namespace csvplus_read_write.Db
 
         #region " Helpers "
 
-        public void AppendToLog(string msg)
-        {
-            if (this.logMsg == "")
-            {
+        public void AppendToLog(string msg) {
+            if (this.logMsg == "") {
                 this.logMsg = msg;
-            }
-            else
-            {
+            } else {
                 this.logMsg = this.logMsg + Environment.NewLine + msg;
             }
         }
-
-        #region " GetValueFromString "
-
-        static public object GetValueFromString(DataColumn oCol, string sValue)
-        {
-            object ret = DBNull.Value;
-            string sType = oCol.DataType.ToString();
-            if (sType == "System.String")
-                ret = "";
-
-            if (sValue != "")
-            {
-                switch (sType)
-                {
-                    case ("System.String"):
-                        ret = sValue;
-                        break;
-
-                    case ("System.Int32"):
-                        ret = Int32.Parse(sValue);
-                        break;
-
-                    case ("System.Int64"):
-                        ret = Int64.Parse(sValue);
-                        break;
-
-                    case ("System.DateTime"):
-
-                        try
-                        {
-                            DateTime oDt = DateTime.MinValue;
-                            if (!DateTime.TryParse(sValue, out oDt))
-                            {
-                                oDt = DateTime.MinValue;
-                            }
-                            //ret = DateTime.Parse(sValue);
-                            ret = oDt;
-
-                        }
-                        catch
-                        {
-                            ret = DateTime.MinValue;
-                        }
-                        break;
-
-                    case ("System.Double"):
-                        ret = Double.Parse(sValue);
-                        break;
-
-                    case ("System.Boolean"):
-                        string val = sValue.ToLower();
-                        if (val == "0" || val == "false" || val == "f")
-                            ret = false;
-                        else if (val == "1" || val == "true" || val == "t")
-                            ret = true;
-                        break;
-
-                    case ("System.Byte"):
-                        ret = Byte.Parse(sValue);
-                        break;
-
-                }
-            }
-
-            return ret;
-        }
-
-        #endregion
 
         #endregion
 
@@ -183,11 +111,11 @@ namespace csvplus_read_write.Db
                         this.oDtErr.Columns.Add(new DataColumn("Column" + iCol.ToString()));
                     }
 
-                    oRow[iCol] = GetValueFromString(this.oDtErr.Columns[iCol], fld);
+                    oRow[iCol] = DbHelper.GetValueFromString(this.oDtErr.Columns[iCol], fld);
                     iCol++;
 
                 } else {
-                    oRow[iCol] = GetValueFromString(this.oDtErr.Columns[iCol], fld);
+                    oRow[iCol] = DbHelper.GetValueFromString(this.oDtErr.Columns[iCol], fld);
                     iCol++;
                 }
             }

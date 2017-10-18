@@ -38,8 +38,7 @@ namespace csvplus_read_write.Db
 
             this.columnName = fld;
             this.columnPosition = iPos;
-            if (dataType.Trim() != "")
-            {
+            if (dataType.Trim() != "") {
                 this.dataType = Type.GetType(dataType);
             }
             this.dataTypeFormat = dataTypeFormat;

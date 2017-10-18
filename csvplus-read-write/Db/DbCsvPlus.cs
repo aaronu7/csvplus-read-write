@@ -120,24 +120,28 @@ namespace csvplus_read_write.Db
 
         #endregion
 
-        static public void QuickSaveDataTable(DataTable oDt, string sFolderPath, bool HasHeader, bool HasDataType) {
-            DbCsvPlus.SaveDataTable(oDt, sFolderPath, HasHeader, HasDataType, false, true, null, ".csv");
+        static public bool QuickSaveDataTable(DataTable oDt, string sFolderPath, bool HasHeader, bool HasDataType) {
+            return DbCsvPlus.SaveDataTable(oDt, sFolderPath, oDt.TableName, HasHeader, HasDataType, false, true, null, ".csv");
         }
-        static public void QuickSaveDataTable(DataSet oDs, string sFolderPath, bool HasHeader, bool HasDataType) {
-            DbCsvPlus.SaveDataTable(oDs, sFolderPath, HasHeader, HasDataType, false, true, null, ".csv");
+        static public bool QuickSaveDataSet(DataSet oDs, string sFolderPath, bool HasHeader, bool HasDataType) {
+            return DbCsvPlus.SaveDataSet(oDs, sFolderPath, HasHeader, HasDataType, false, true, null, ".csv");
         }
 
-        static public void SaveDataTable(DataSet oDs, string sFolderPath, bool HasHeader, bool HasDataType, bool RetainNewLine, bool ForceAllStringQuotes, string[] ForceSelectStringQuotes, string extension) {
+        static public bool SaveDataSet(DataSet oDs, string sFolderPath, bool HasHeader, bool HasDataType, bool RetainNewLine, bool ForceAllStringQuotes, string[] ForceSelectStringQuotes, string extension) {
+            bool res = true;
             foreach(DataTable oDt in oDs.Tables) {
-                SaveDataTable(oDt, sFolderPath, HasHeader, HasDataType, RetainNewLine, ForceAllStringQuotes, ForceSelectStringQuotes, extension);
+                res = SaveDataTable(oDt, sFolderPath, oDt.TableName, HasHeader, HasDataType, RetainNewLine, ForceAllStringQuotes, ForceSelectStringQuotes, extension);
+                if(!res)
+                    break;
             }
+            return res;
         }
-        static public void SaveDataTable(DataTable oDt, string sFolderPath, bool HasHeader, bool HasDataType, bool RetainNewLine, bool ForceAllStringQuotes, string[] ForceSelectStringQuotes, string extension) {
-            SaveDataTable(oDt, "", "", "", sFolderPath, HasHeader, HasDataType, RetainNewLine, ForceAllStringQuotes, ForceSelectStringQuotes, extension);
-        }
+        //static public bool SaveDataTable(DataTable oDt, string sFolderPath, bool HasHeader, bool HasDataType, bool RetainNewLine, bool ForceAllStringQuotes, string[] ForceSelectStringQuotes, string extension) {
+        //    return SaveDataTable(oDt, "", "", "", sFolderPath, HasHeader, HasDataType, RetainNewLine, ForceAllStringQuotes, ForceSelectStringQuotes, extension);
+        //}
 
-        static public void SaveDataTable(DataTable oDt, string sFolderPath, string tablename, bool HasHeader, bool HasDataType, bool RetainNewLine, bool ForceAllStringQuotes, string[] ForceSelectStringQuotes, string extension) {
-            SaveDataTable(oDt, tablename, "", "", sFolderPath, HasHeader, HasDataType, RetainNewLine, ForceAllStringQuotes, ForceSelectStringQuotes, extension);
+        static public bool SaveDataTable(DataTable oDt, string sFolderPath, string tablename, bool HasHeader, bool HasDataType, bool RetainNewLine, bool ForceAllStringQuotes, string[] ForceSelectStringQuotes, string extension) {
+            return SaveDataTable(oDt, tablename, "", "", sFolderPath, HasHeader, HasDataType, RetainNewLine, ForceAllStringQuotes, ForceSelectStringQuotes, extension);
         }
 
         /// <summary>
@@ -154,14 +158,16 @@ namespace csvplus_read_write.Db
         /// <param name="forceAllStringQuotes">If true then ALL columns of DataType string will be quoated.</param>
         /// <param name="forceSelectStringQuotes">Set to null to ignore. When this array is set then only the specified columns will be quoted.</param>
         /// <param name="extension">The extension to use when naming the output file.</param>
-        static public void SaveDataTable(DataTable oDt, string tablename, string where, string order, string folderPath, bool hasHeader, bool hasDataType, bool retainNewLine, bool forceAllStringQuotes, string[] forceSelectStringQuotes, string extension)
+        static public bool SaveDataTable(DataTable oDt, string tablename, string where, string order, string folderPath, bool hasHeader, bool hasDataType, bool retainNewLine, bool forceAllStringQuotes, string[] forceSelectStringQuotes, string extension)
         {
+            bool res = true;
             extension = extension.Trim().Trim('.');
 
             if(oDt == null) {
                 System.Console.WriteLine("Saving null DataTable");
+                res = false;
             } else {
-                string sFile    = "";
+                string sFileLine    = "";
                 string sNewLine = ""; //"\n\r"
                 string sDelim   = ","; 
                 //System.Console.WriteLine("SaveToFile: Start");
@@ -203,30 +209,28 @@ namespace csvplus_read_write.Db
                     //
                     if(hasHeader == true) {
                         foreach(DataColumn ocol in oDt.Columns) {
-                            Append(ref sFile, ocol.ColumnName, sDelim, false, true);
+                            Append(ref sFileLine, ocol.ColumnName, sDelim, false, true);
                         }
-                        tw.WriteLine(sFile + sNewLine);
-                        sFile = "";
+                        tw.WriteLine(sFileLine + sNewLine);
+                        sFileLine = "";
                     }
 
                     if(hasDataType == true) {
                         foreach(DataColumn ocol in oDt.Columns) {
-                            Append(ref sFile, ocol.DataType.ToString(), sDelim, false, true);
+                            Append(ref sFileLine, ocol.DataType.ToString(), sDelim, false, true);
                         }
-                        tw.WriteLine(sFile + sNewLine);
-                        sFile = "";
+                        tw.WriteLine(sFileLine + sNewLine);
+                        sFileLine = "";
                     }
 
                     DataRow[] oRowSet = oDt.Select(where, order);
-
                     foreach(DataRow orow in oRowSet) {
-                        //if((string)orow["Report_Name"] == "Historical Entry") {
-                        //    int a = 1;
-                        //}
-
                         foreach(DataColumn ocol in oDt.Columns) {
+
+                            // Get the default output value
                             string val = DbHelper.GetValueAsString(orow[ocol]);
 
+                            // Override with 
                             if(orow[ocol].GetType().ToString() == "System.String") {
                         
                                 if(retainNewLine == true) {
@@ -262,20 +266,21 @@ namespace csvplus_read_write.Db
                                 }
                             }
 
-                            Append(ref sFile, val, sDelim, false, true);
+                            Append(ref sFileLine, val, sDelim, false, true);
                         }
-                        if(sFile.EndsWith(sDelim) == true) {
+                        if(sFileLine.EndsWith(sDelim) == true) {
                             // remove the last NULL delim
-                            sFile = sFile.Substring(0, sFile.Length - 1);
+                            sFileLine = sFileLine.Substring(0, sFileLine.Length - 1);
                         }
 
-                        tw.WriteLine(sFile + sNewLine);
-                        sFile = "";
+                        tw.WriteLine(sFileLine + sNewLine);
+                        sFileLine = "";
                     }
 
                     tw.Close();
                 }
             }
+            return res;
         }
 
         #endregion
