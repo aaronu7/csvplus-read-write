@@ -364,7 +364,7 @@ namespace csvplus_read_write.Db
                     }
                 }
 
-                CoreDbCsvHeaderRule oHeaderRule = new CoreDbCsvHeaderRule(oRules, oError, fld, fldPos, sType, sFormat);
+                DbCsvHeaderRule oHeaderRule = new DbCsvHeaderRule(oRules, oError, fld, fldPos, sType, sFormat);
                 // force a datatype on the column
                 if (sType.Trim() != "") {
                     oDt.Columns[fld].DataType = Type.GetType(sType);
@@ -445,11 +445,6 @@ namespace csvplus_read_write.Db
                     iColCount++;
                     if (fld.ToLower() == "column1" || fld.ToLower() == "") {
                         hasColumn1 = true;
-                    }
-
-                    // Add simple error coloumn (string) to catch what-ever error value may trigger an entry
-                    if (oError != null && oError.oDtErr != null) {
-                        oError.oDtErr.Columns.Add(new DataColumn(fld, Type.GetType("System.String")));
                     }
                 }
                 iFldPos++;
@@ -580,7 +575,7 @@ namespace csvplus_read_write.Db
                         bool setWithRule = false;
                         if (iLine == firstDataLine || !oRules.ruleCheckOnlyFirstDataLine) {
 
-                            CoreDbCsvHeaderRule oHeaderRule = oRules.GetHeaderRule(iCol);
+                            DbCsvHeaderRule oHeaderRule = oRules.GetHeaderRule(iCol);
                             if (oHeaderRule != null) {
                                 setWithRule = true;
                                 isOK = oHeaderRule.ProcessData(datum, ref dataObject);

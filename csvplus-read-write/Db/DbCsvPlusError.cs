@@ -9,31 +9,17 @@ namespace csvplus_read_write.Db
         // This object tracks issues in the CSV file
         public DataTable oDtErr = null;                     // oDtErr stores the rows that have issues
         public string logMsg = "";                          // msg log to append issues messages to
-
         public Dictionary<String, Int32> errorFlags = null; // flag keys and occurance count
 
-        /*
-        public bool error_HeaderRequiredMissing = false;
-        public bool error_HeaderOptionalMissing = false;   // optional header removed
-        public bool error_HeaderNewWarning = false;        // new header found
-        public bool error_HeaderBadName = false;
-        public bool error_HeaderPoorNameWarning = false;
-        public bool error_HeaderDuplicate = false;
-        public bool error_DataFldTooFew = false;
-        public bool error_DataFldTooMany = false;
-        public bool error_DataFldOnLastRow = false; // did this error occur on the last row of the dataset
-        public bool error_DataFldBadType = false;
-        */
+        public DbCsvPlusError() {
+            errorFlags = new Dictionary<string, int>();
+        }
+
+        #region " Add flag " 
 
         //public bool error_DataFldBadRule = false;
         //public bool error_DataType_Unknown = false;
 
-        public DbCsvPlusError(string csvTableName)
-        {
-            oDtErr = new DataTable(csvTableName + "_ERROR");
-        }
-
-        #region " Add flag " 
 
         protected void AddFlag(string flagName) {
             if(errorFlags==null)
@@ -152,38 +138,41 @@ namespace csvplus_read_write.Db
 
         #endregion
 
+        /// <summary>
+        /// Discard this data row into the error table. This will update the error table with any required data columns.
+        /// </summary>
+        /// <param name="oDt">The target datatable which is being populated from the CSV file.</param>
+        /// <param name="flds">The array of field values which are causing this discard to be triggered.</param>
         public void DiscardLine(DataTable oDt, string[] flds)
         {
-            // Discard the line, if an discardable error condition was met
-
-            if (this.oDtErr != null)
-            {
-                DataRow oRow = this.oDtErr.NewRow();
-                int iCol = 0;
-                foreach (string fld in flds)
-                {
-                    if (iCol > oDt.Columns.Count - 1)
-                    {
-
-                        // Column count too high ... lets just add a generic new one
-                        if (!this.oDtErr.Columns.Contains("Column" + iCol.ToString()))
-                        {
-                            this.oDtErr.Columns.Add(new DataColumn("Column" + iCol.ToString()));
-                        }
-
-                        oRow[iCol] = GetValueFromString(this.oDtErr.Columns[iCol], fld);
-                        iCol++;
-
-                    }
-                    else
-                    {
-                        oRow[iCol] = GetValueFromString(this.oDtErr.Columns[iCol], fld);
-                        iCol++;
-                    }
+            // Create the Error table
+            if(this.oDtErr==null) {
+                this.oDtErr = new DataTable(oDt.TableName + "_ERROR");
+                foreach(DataColumn oCol in oDt.Columns) {
+                    this.oDtErr.Columns.Add(oCol.ColumnName, Type.GetType("System.String"));   // always force error columns into a string type
                 }
-
-                this.oDtErr.Rows.Add(oRow);
             }
+
+            DataRow oRow = this.oDtErr.NewRow();
+            int iCol = 0;
+            foreach (string fld in flds) {
+
+                if (iCol > oDt.Columns.Count - 1) {
+                    // Column count too high ... lets just add a generic new one
+                    if (!this.oDtErr.Columns.Contains("Column" + iCol.ToString())) {
+                        this.oDtErr.Columns.Add(new DataColumn("Column" + iCol.ToString()));
+                    }
+
+                    oRow[iCol] = GetValueFromString(this.oDtErr.Columns[iCol], fld);
+                    iCol++;
+
+                } else {
+                    oRow[iCol] = GetValueFromString(this.oDtErr.Columns[iCol], fld);
+                    iCol++;
+                }
+            }
+
+            this.oDtErr.Rows.Add(oRow);
         }
     }
 

@@ -30,7 +30,7 @@ namespace csvplus_read_write.Db
         private string _dataTypeFormats = "";           // format rules .... DateTime, RegEx on strings, etc
         public string[] aDataTypeFormats = null;
 
-        private Dictionary<int, CoreDbCsvHeaderRule> headerRules = null;
+        private Dictionary<int, DbCsvHeaderRule> headerRules = null;
 
 
         public DbCsvPlusRules(bool discardOnToFewDataFlds, bool discardOnToManyDataFlds, bool ruleCheckOnlyFirstDataLine, string requiredHeaders, string additionalHeaders)
@@ -77,16 +77,16 @@ namespace csvplus_read_write.Db
             }
         }
 
-        public void AddHeaderRule(int iColPos, CoreDbCsvHeaderRule oHeaderRule)
+        public void AddHeaderRule(int iColPos, DbCsvHeaderRule oHeaderRule)
         {
             if (headerRules == null)
-                headerRules = new Dictionary<int, CoreDbCsvHeaderRule>();
+                headerRules = new Dictionary<int, DbCsvHeaderRule>();
 
             this.headerRules.Add(iColPos, oHeaderRule);
         }
-        public CoreDbCsvHeaderRule GetHeaderRule(int iColPos)
+        public DbCsvHeaderRule GetHeaderRule(int iColPos)
         {
-            CoreDbCsvHeaderRule oHeaderRule = null;
+            DbCsvHeaderRule oHeaderRule = null;
             if (this.headerRules != null && this.headerRules.ContainsKey(iColPos))
             {
                 oHeaderRule = this.headerRules[iColPos];

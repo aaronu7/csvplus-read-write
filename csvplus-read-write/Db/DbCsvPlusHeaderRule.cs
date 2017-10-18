@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace csvplus_read_write.Db
 {
-    public class CoreDbCsvHeaderRule
+    public class DbCsvHeaderRule
     {
-        DbCsvPlusRules oRules = null;
-        DbCsvPlusError oError = null;
+        private DbCsvPlusRules oRules = null;
+        private DbCsvPlusError oError = null;
 
         // lookup via fld or iPos --- iPos is probably faster
         public string columnName = "";
@@ -17,7 +17,7 @@ namespace csvplus_read_write.Db
         public Type dataType = Type.GetType("System.String");
         public string dataTypeFormat = "";
 
-        public CoreDbCsvHeaderRule(DbCsvPlusRules oRules, DbCsvPlusError oError, string fld, int iPos, string dataType, string dataTypeFormat)
+        public DbCsvHeaderRule(DbCsvPlusRules oRules, DbCsvPlusError oError, string fld, int iPos, string dataType, string dataTypeFormat)
         {
             this.oRules = oRules;
             this.oError = oError;
