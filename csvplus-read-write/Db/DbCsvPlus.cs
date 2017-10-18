@@ -36,8 +36,12 @@ namespace csvplus_read_write.Db
     /// </summary>
     public static class DbCsvPlus
     {
+        #region " SaveDataTable "
 
-        #region " GetDataTable "
+        #endregion
+
+
+        #region " LoadDataTable "
 
         #region " LoadDataTableFromCsvString - From a data string "
 
@@ -66,6 +70,7 @@ namespace csvplus_read_write.Db
             int iColCount = 0;
             bool hasColumn1 = false;
             int firstDataLine = 1;
+            bool isRowError = false;
 
             // Loop the lines of data
             string[] lines = data.Split('\n');
@@ -87,51 +92,45 @@ namespace csvplus_read_write.Db
                 string[] flds = (string[])result.ToArray(typeof(string));
 
                 // Process the line
-                if (oError != null)
-                    oError.error_DataFldOnLastRow = false;    // Set below on discard. If the last is an error this "reset" will never be hit
+                isRowError = false;    // This is used to detect a lastRow error
 
-                if ((HasHeader == true) && (iLine == 1))
-                {
-
+                if ((HasHeader == true) && (iLine == 1)) {
                     // Header Row
                     ProccessLineHeader(oDt, oError, oRules, flds, data, ref iColCount, ref hasColumn1);
                     firstDataLine++;
 
-                }
-                else if (((HasHeader == false) && (HasDataType == true) && (iLine == 1)) ||
-                    ((HasHeader == true) && (HasDataType == true) && (iLine == 2)))
-                {
+                } else if (((HasHeader == false) && (HasDataType == true) && (iLine == 1)) ||
+                    ((HasHeader == true) && (HasDataType == true) && (iLine == 2))) {
 
                     // DataType Row
                     ProccessLineDataType(oDt, oError, flds);
                     firstDataLine++;
 
-                }
-                else
-                {
+                } else {
 
                     // Data Row
                     bool IsDiscard = ProccessLine_DiscardCheck(oError, oRules, iColCount, flds);
 
-                    if (!IsDiscard)
-                    {
+                    if (!IsDiscard) {
                         // Process this line normally
-                        ProccessLine(oDt, oError, oRules, flds, iLine, firstDataLine);
+                        isRowError = ProccessLine(oDt, oError, oRules, flds, iLine, firstDataLine);
 
-                    }
-                    else
-                    {
+                    } else {
                         // Discard the line IFF a discardable error condition was met
                         //      this will add the errorous row to oDtErr (instead of oDt)
-                        if (oError != null)
-                        {
-                            oError.error_DataFldOnLastRow = true;
+                        isRowError = true;
+                        if (oError != null) {
                             oError.DiscardLine(oDt, flds);
                         }
                     }
                 }
 
                 iLine++;
+            }
+
+            // if the last row threw a discard, then this will occur
+            if(isRowError && oError != null) {
+                oError.AddFlag_ErrorOnLastRow();
             }
 
             return oDt;
@@ -155,8 +154,7 @@ namespace csvplus_read_write.Db
         /// <returns></returns>
         static public DataTable LoadDataTable(string filePath, Encoding fileEnc,
             bool HasHeader, bool HasDataType, bool RetainNewLine, char delim,
-            DbCsvPlusRules oRules, DbCsvPlusError oError)
-        {
+            DbCsvPlusRules oRules, DbCsvPlusError oError) {
 
             DataTable oDt = null;
             StreamReader reader = null;
@@ -164,39 +162,26 @@ namespace csvplus_read_write.Db
 
             //======================================================
             // Open our file with a stream reader
-            if (!System.IO.File.Exists(filePath))
-            {
-                if (oError != null)
-                {
+            if (!System.IO.File.Exists(filePath)) {
+                if (oError != null) {
                     oError.AppendToLog("File not found: " + filePath);
-                }
-                else
-                {
+                } else {
                     System.Console.WriteLine("File not found: " + filePath);
                 }
-            }
-            else
-            {
-                try
-                {
+            } else {
+                try {
                     stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-                    if (stream == null || !stream.CanRead)
-                    {
-                        if (oError != null)
-                        {
+                    if (stream == null || !stream.CanRead) {
+                        if (oError != null) {
                             oError.AppendToLog("Could not read CSV: " + filePath);
-                        }
-                        else
-                        {
+                        } else {
                             System.Console.WriteLine("Could not read CSV: " + filePath);
                         }
                     }
-                    if (fileEnc == null)
-                    {
+
+                    if (fileEnc == null) {
                         reader = new StreamReader(stream);
-                    }
-                    else
-                    {
+                    } else {
                         reader = new StreamReader(stream, fileEnc);
                     }
 
@@ -206,22 +191,19 @@ namespace csvplus_read_write.Db
 
                     // Table and FileStream are ready... lets process
                     _GetCvsDataTableBase(reader, oDt, HasHeader, HasDataType, RetainNewLine, delim, fileEnc, oRules, oError);
-                }
-                catch
-                {
+
+                } catch {
                     System.Console.WriteLine("Could not open CSV: " + filePath);
                 }
             }
 
             // Dispose
-            if (reader != null)
-            {
+            if (reader != null) {
                 reader.Close();
                 reader.Dispose();
                 reader = null;
             }
-            if (stream != null)
-            {
+            if (stream != null) {
                 stream.Close();
                 stream.Dispose();
                 stream = null;
@@ -240,58 +222,49 @@ namespace csvplus_read_write.Db
             int iColCount = 0;
             bool hasColumn1 = false;
             int firstDataLine = 1;
+            bool isRowError = false;
 
             // Get the first line of data (and split flds)
             string data = "";
             string[] flds = GetCSVLine(reader, RetainNewLine, delim, ref data);
 
-            if (data != null)
-            {
+            if (data != null) {
                 //dataLast = (string)data.Clone();
 
                 // Loop while the flds are not NULL
-                while (flds != null)
-                {
+                while (flds != null) {
+                    isRowError = false;    // This is used to detect a lastRow error
 
-                    if (oError != null)
-                        oError.error_DataFldOnLastRow = false;    // Set below on discard. If the last is an error this "reset" will never be hit
-
-                    if ((HasHeader == true) && (iLine == 1))
-                    {
-
+                    if ((HasHeader == true) && (iLine == 1)) {
                         // Header Row
                         ProccessLineHeader(oDt, oError, oRules, flds, data, ref iColCount, ref hasColumn1);
                         firstDataLine++;
 
-                    }
-                    else if (((HasHeader == false) && (HasDataType == true) && (iLine == 1)) ||
-                        ((HasHeader == true) && (HasDataType == true) && (iLine == 2)))
-                    {
-
+                    } else if (((HasHeader == false) && (HasDataType == true) && (iLine == 1)) ||
+                        ((HasHeader == true) && (HasDataType == true) && (iLine == 2))) {
                         // DataType Row
                         ProccessLineDataType(oDt, oError, flds);
                         firstDataLine++;
 
-                    }
-                    else
-                    {
-
+                    } else {
                         // Data Row
                         bool IsDiscard = ProccessLine_DiscardCheck(oError, oRules, iColCount, flds);
 
-                        if (!IsDiscard)
-                        {
+                        if (!IsDiscard) {
                             // Process this line normally
-                            ProccessLine(oDt, oError, oRules, flds, iLine, firstDataLine);
+                            bool isOk = ProccessLine(oDt, oError, oRules, flds, iLine, firstDataLine);
+                            if (!isOk) {
+                                isRowError = true;
+                                if (oError != null) {
+                                    oError.DiscardLine(oDt, flds);
+                                }
+                            }
 
-                        }
-                        else
-                        {
+                        } else {
                             // Discard the line IFF a discardable error condition was met
                             //      this will add the errorous row to oDtErr (instead of oDt)
-                            if (oError != null)
-                            {
-                                oError.error_DataFldOnLastRow = true;
+                            isRowError = true;
+                            if (oError != null) {
                                 oError.DiscardLine(oDt, flds);
                             }
                         }
@@ -302,6 +275,11 @@ namespace csvplus_read_write.Db
                     flds = GetCSVLine(reader, RetainNewLine, delim, ref data);
                     iLine++;
                 }
+            }
+
+            // if the last row threw a discard, then this will occur
+            if(isRowError && oError != null) {
+                oError.AddFlag_ErrorOnLastRow();
             }
         }
 
@@ -328,15 +306,12 @@ namespace csvplus_read_write.Db
                 else
                     IsDiscard = false;
 
-                if (oError != null)
-                {
-                    oError.error_DataFldTooFew = true;
+                if (oError != null) {
+                    oError.AddFlag_DataFldTooFew();
                     oError.AppendToLog("Fewer data fields then column headers: " + String.Join(",", flds));
                 }
 
-            }
-            else if (iColCount != 0 && iColCount < flds.Length)
-            {
+            } else if (iColCount != 0 && iColCount < flds.Length) {
                 // We have more fields then we have columns ... no choice but to discard this entry
                 //      this entry probably has a bad comma causing an extra field
                 if (oRules != null)
@@ -344,9 +319,8 @@ namespace csvplus_read_write.Db
                 else
                     IsDiscard = false;
 
-                if (oError != null)
-                {
-                    oError.error_DataFldTooMany = true;
+                if (oError != null) {
+                    oError.AddFlag_DataFldTooMany();
                     oError.AppendToLog("Too many fields, Discard Entry: " + String.Join(",", flds));
                 }
             }
@@ -392,8 +366,7 @@ namespace csvplus_read_write.Db
 
                 CoreDbCsvHeaderRule oHeaderRule = new CoreDbCsvHeaderRule(oRules, oError, fld, fldPos, sType, sFormat);
                 // force a datatype on the column
-                if (sType.Trim() != "")
-                {
+                if (sType.Trim() != "") {
                     oDt.Columns[fld].DataType = Type.GetType(sType);
                 }
                 oRules.AddHeaderRule(fldPos, oHeaderRule);
@@ -416,39 +389,31 @@ namespace csvplus_read_write.Db
                 if (oDt.Columns.Contains(fld))
                 {
                     // Duplicate header column
-                    if (oError != null)
-                    {
-                        oError.error_HeaderDuplicate = true;
+                    if (oError != null) {
+                        oError.AddFlag_HeaderDuplicate();
                         oError.AppendToLog("Duplicate header name: " + fld);
                     }
-                    if (oRules != null)
-                    {
+                    if (oRules != null) {
                         keepGoing = oRules.keepHeaderDuplicates;
                     }
                 }
 
-                if (ProccessLineHeader_IsBadName(fld))
-                {
+                if (ProccessLineHeader_IsBadName(fld)) {
                     // Header has unsupported symbols
-                    if (oError != null)
-                    {
-                        oError.error_HeaderBadName = true;
+                    if (oError != null) {
+                        oError.AddFlag_HeaderBadName();
                         oError.AppendToLog("Header has a Bad Name and uses unsupported symbols: " + fld);
                     }
-                    if (oRules != null)
-                    {
+                    if (oRules != null) {
                         if (keepGoing)
                             keepGoing = oRules.keepHeaderBadnames;
                     }
                 }
 
-                if (keepGoing)
-                {
-                    if (!ProccessLineHeader_IsIdealName(fld))
-                    {
-                        if (oError != null)
-                        {
-                            oError.error_HeaderPoorNameWarning = true;
+                if (keepGoing) {
+                    if (!ProccessLineHeader_IsIdealName(fld)) {
+                        if (oError != null) {
+                            oError.AddFlag_HeaderPoorNameWarning();
                             oError.AppendToLog("Warning header uses non-ideal symbols: " + fld);
                         }
                     }
@@ -456,25 +421,21 @@ namespace csvplus_read_write.Db
                     // Maintain counts - we've already filter out duplication, so this should work
                     bool isNew = true;
                     bool isRequired = false;
-                    if (oRules != null && oRules.aRequiredHeaders != null)
-                    {
-                        if (oRules.aRequiredHeaders.Contains(fld))
-                        {
+                    if (oRules != null && oRules.aRequiredHeaders != null) {
+                        if (oRules.aRequiredHeaders.Contains(fld)) {
                             reqFound++;
                             isNew = false;
                             isRequired = true;
                         }
                     }
-                    if (oRules != null && oRules.aOptionalHeaders != null)
-                    {
-                        if (oRules.aOptionalHeaders.Contains(fld))
-                        {
+
+                    if (oRules != null && oRules.aOptionalHeaders != null) {
+                        if (oRules.aOptionalHeaders.Contains(fld)) {
                             optFound++;
                             isNew = false;
                         }
                     }
-                    if (isNew)
-                    {
+                    if (isNew) {
                         newFound++;
                     }
 
@@ -482,14 +443,12 @@ namespace csvplus_read_write.Db
                     ProccessLineHeader_PrepareRulesSetColumn(oDt, oRules, oError, fld, iFldPos, isRequired);
 
                     iColCount++;
-                    if (fld.ToLower() == "column1" || fld.ToLower() == "")
-                    {
+                    if (fld.ToLower() == "column1" || fld.ToLower() == "") {
                         hasColumn1 = true;
                     }
 
                     // Add simple error coloumn (string) to catch what-ever error value may trigger an entry
-                    if (oError != null && oError.oDtErr != null)
-                    {
+                    if (oError != null && oError.oDtErr != null) {
                         oError.oDtErr.Columns.Add(new DataColumn(fld, Type.GetType("System.String")));
                     }
                 }
@@ -497,39 +456,30 @@ namespace csvplus_read_write.Db
             }
 
 
-            if (oRules != null)
-            {
+            if (oRules != null) {
                 // Check and log new headers
-                if (newFound > 0)
-                {
-                    if (oError != null)
-                    {
-                        oError.error_HeaderNewWarning = true;
+                if (newFound > 0) {
+                    if (oError != null) {
+                        oError.AddFlag_HeaderNewWarning();
                         oError.AppendToLog("New header(s) found: " + data + "   (expected: " + oRules._requiredHeaders + "," + oRules._optionalHeaders + ")");
                     }
                 }
 
                 // Check and log required header issues
-                if (oRules.aRequiredHeaders != null)
-                {
-                    if (reqFound != oRules.aRequiredHeaders.Length)
-                    {
-                        if (oError != null)
-                        {
-                            oError.error_HeaderRequiredMissing = true;
+                if (oRules.aRequiredHeaders != null) {
+                    if (reqFound != oRules.aRequiredHeaders.Length) {
+                        if (oError != null) {
+                            oError.AddFlag_HeaderRequiredMissing();
                             oError.AppendToLog("Missing required headers: " + data + "   (required: " + oRules._requiredHeaders + ")");
                         }
                     }
                 }
 
                 // Check and log additonal header issues
-                if (oRules.aOptionalHeaders != null)
-                {
-                    if (optFound != oRules.aOptionalHeaders.Length)
-                    {
-                        if (oError != null)
-                        {
-                            oError.error_HeaderOptionalMissing = true;
+                if (oRules.aOptionalHeaders != null) {
+                    if (optFound != oRules.aOptionalHeaders.Length) {
+                        if (oError != null) {
+                            oError.AddFlag_HeaderOptionalMissing();
                             oError.AppendToLog("Warning missing optional headers: " + data + "   (optionals: " + oRules._optionalHeaders + ")");
                         }
                     }
@@ -605,7 +555,7 @@ namespace csvplus_read_write.Db
 
         #region " ProcessLine "
 
-        static private void ProccessLine(DataTable oDt, DbCsvPlusError oError, DbCsvPlusRules oRules, string[] data, int iLine, int firstDataLine)
+        static private bool ProccessLine(DataTable oDt, DbCsvPlusError oError, DbCsvPlusRules oRules, string[] data, int iLine, int firstDataLine)
         {
             // Good Entry - get data row
 
@@ -614,49 +564,39 @@ namespace csvplus_read_write.Db
             int iCol = 0;
             foreach (string datum in data)
             {
-                if (iCol > oDt.Columns.Count - 1)
-                {
+                if (iCol > oDt.Columns.Count - 1) {
                     //  Column count is too high
                     //      simply "crop these" data fields.... error object has the details
-                }
-                else
-                {
 
+                } else {
                     object dataObject = null;
 
-                    if (oRules == null)
-                    {
+                    if (oRules == null) {
                         // No rule engine, assume proper format and get value fast
                         oRow[iCol] = DbHelper.GetValueFromString(oDt.Columns[iCol], datum);
 
-                    }
-                    else
-                    {
+                    } else {
                         // OK, lets get a rule
                         bool setWithRule = false;
-                        if (iLine == firstDataLine || !oRules.ruleCheckOnlyFirstDataLine)
-                        {
+                        if (iLine == firstDataLine || !oRules.ruleCheckOnlyFirstDataLine) {
+
                             CoreDbCsvHeaderRule oHeaderRule = oRules.GetHeaderRule(iCol);
-                            if (oHeaderRule != null)
-                            {
+                            if (oHeaderRule != null) {
                                 setWithRule = true;
                                 isOK = oHeaderRule.ProcessData(datum, ref dataObject);
-                                if (isOK)
-                                {
+                                if (isOK) {
                                     oRow[iCol] = dataObject;
                                 }
                             }
                         }
 
                         // No rule matched this one
-                        if (!setWithRule)
-                        {
+                        if (!setWithRule) {
                             isOK = DbHelper.GetValueFromStringTry(oDt.Columns[iCol], datum, "", ref dataObject);
                             oRow[iCol] = dataObject;
                         }
 
-                        if (!isOK)
-                        {
+                        if (!isOK) {
                             break;
                         }
                     }
@@ -664,19 +604,11 @@ namespace csvplus_read_write.Db
                 iCol++;
             }
 
-            if (isOK)
-            {
+            if (isOK) {
                 oDt.Rows.Add(oRow);
             }
-            else
-            {
-                // Bad row, trigger a discard
-                if (oError != null)
-                {
-                    oError.error_DataFldOnLastRow = true;
-                    oError.DiscardLine(oDt, data);
-                }
-            }
+
+            return isOK;
         }
 
 
@@ -684,9 +616,7 @@ namespace csvplus_read_write.Db
 
         #region " GetCSVLine / ParseCSVFields "
 
-        static private string[] GetCSVLine(StreamReader reader, bool RetainNewLine, char delim, ref string dataLine)
-        {
-
+        static private string[] GetCSVLine(StreamReader reader, bool RetainNewLine, char delim, ref string dataLine) {
             dataLine = reader.ReadLine();
 
             if (dataLine == null)
@@ -704,9 +634,7 @@ namespace csvplus_read_write.Db
             return (string[])result.ToArray(typeof(string));
         }
 
-
-        static private void ParseCSVFields(ArrayList result, string data, char delim)
-        {
+        static private void ParseCSVFields(ArrayList result, string data, char delim) {
             // Parses the CSV fields and pushes the fields into the result arraylist
             int pos = -1;
 
@@ -714,13 +642,11 @@ namespace csvplus_read_write.Db
                 result.Add(ParseCSVField(data, delim, ref pos));
         }
 
-        static private string ParseCSVField(string data, char delim, ref int startSeparatorPosition)
-        {
+        static private string ParseCSVField(string data, char delim, ref int startSeparatorPosition) {
             // Parses the field at the given position of the data, modified pos to match
             // the first unparsed position and returns the parsed field
 
-            if (startSeparatorPosition == data.Length - 1)
-            {
+            if (startSeparatorPosition == data.Length - 1) {
                 startSeparatorPosition++;
                 // The last field is empty
                 return "";
@@ -729,11 +655,10 @@ namespace csvplus_read_write.Db
             int fromPos = startSeparatorPosition + 1;
 
             // Determine if this is a quoted field
-            if (data[fromPos] == '"')
-            {
+            if (data[fromPos] == '"') {
+
                 // If we're at the end of the string, let's consider this a field that only contains the quote
-                if (fromPos == data.Length - 1)
-                {
+                if (fromPos == data.Length - 1) {
                     fromPos++;
 
                     // FIX: Feb 2016 -- Odd case from MyEd .... lets officially set the variable to terminate at a higher level as well
@@ -753,13 +678,10 @@ namespace csvplus_read_write.Db
 
             // The field ends in the next comma or EOL
             int nextComma = data.IndexOf(delim, fromPos);
-            if (nextComma == -1)
-            {
+            if (nextComma == -1) {
                 startSeparatorPosition = data.Length;
                 return data.Substring(fromPos);
-            }
-            else
-            {
+            } else {
                 startSeparatorPosition = nextComma;
                 return data.Substring(fromPos, nextComma - fromPos);
             }
@@ -773,15 +695,12 @@ namespace csvplus_read_write.Db
 
             int i = startFrom - 1;
             while (++i < data.Length)
-                if (data[i] == '"')
-                {
+                if (data[i] == '"') {
                     // If this is a double quote, bypass the chars
-                    if (i < data.Length - 1 && data[i + 1] == '"')
-                    {
+                    if (i < data.Length - 1 && data[i + 1] == '"') {
                         i++;
                         continue;
-                    }
-                    else
+                    } else
                         return i;
                 }
             // If no quote found, return the end value of i (data.Length)

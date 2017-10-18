@@ -24,7 +24,7 @@ namespace csvplus_read_write.Db
 
         //public string forceStringQuotes = "";         // force these data-types on the requiredHeaders        // ****** Used when saving
 
-        public bool ruleCheckOnlyFirstDataLine = true;  // a performance consideration to rule check ONLY the first data line (rather then ALL of them)
+        public bool ruleCheckOnlyFirstDataLine = false;  // a performance consideration to rule check ONLY the first data line (rather then ALL of them)
         private string _forceDataTypes = "";              // force these data-types on the requiredHeaders
         public string[] aForceDataTypes = null;
         private string _dataTypeFormats = "";           // format rules .... DateTime, RegEx on strings, etc
@@ -33,10 +33,11 @@ namespace csvplus_read_write.Db
         private Dictionary<int, CoreDbCsvHeaderRule> headerRules = null;
 
 
-        public DbCsvPlusRules(bool discardOnToFewDataFlds, bool discardOnToManyDataFlds, string requiredHeaders, string additionalHeaders)
+        public DbCsvPlusRules(bool discardOnToFewDataFlds, bool discardOnToManyDataFlds, bool ruleCheckOnlyFirstDataLine, string requiredHeaders, string additionalHeaders)
         {
             this.discardOnToFewDataFlds = discardOnToFewDataFlds;
             this.discardOnToManyDataFlds = discardOnToManyDataFlds;
+            this.ruleCheckOnlyFirstDataLine = ruleCheckOnlyFirstDataLine;
             this._requiredHeaders = requiredHeaders;
             this._optionalHeaders = additionalHeaders;
 

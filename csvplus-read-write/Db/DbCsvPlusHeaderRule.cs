@@ -35,12 +35,10 @@ namespace csvplus_read_write.Db
         {
             // try cast to data type
             bool isOK = DbHelper.GetValueFromStringTry(dataType.ToString(), dataValue, this.dataTypeFormat, ref dataObject);
-            if (!isOK)
-            {
+            if (!isOK) {
                 // parse failed
-                if (oError != null)
-                {
-                    oError.error_DataFldBadType = true;
+                if (oError != null) {
+                    oError.AddFlag_DataFldBadType();
                     oError.AppendToLog("DataType cannot cast the line value: " +
                         this.columnName + "[" + this.dataType.ToString() + "]" + " failed to cast " + dataValue + " into the format: " + this.dataTypeFormat);
                 }

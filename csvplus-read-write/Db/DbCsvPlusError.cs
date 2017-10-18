@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Collections.Generic;
 
 namespace csvplus_read_write.Db
 {
@@ -9,25 +10,63 @@ namespace csvplus_read_write.Db
         public DataTable oDtErr = null;                     // oDtErr stores the rows that have issues
         public string logMsg = "";                          // msg log to append issues messages to
 
+        public Dictionary<String, Int32> errorFlags = null; // flag keys and occurance count
+
+        /*
         public bool error_HeaderRequiredMissing = false;
         public bool error_HeaderOptionalMissing = false;   // optional header removed
         public bool error_HeaderNewWarning = false;        // new header found
         public bool error_HeaderBadName = false;
         public bool error_HeaderPoorNameWarning = false;
         public bool error_HeaderDuplicate = false;
-
         public bool error_DataFldTooFew = false;
         public bool error_DataFldTooMany = false;
         public bool error_DataFldOnLastRow = false; // did this error occur on the last row of the dataset
         public bool error_DataFldBadType = false;
-        //public bool error_DataFldBadRule = false;
+        */
 
+        //public bool error_DataFldBadRule = false;
         //public bool error_DataType_Unknown = false;
 
         public DbCsvPlusError(string csvTableName)
         {
             oDtErr = new DataTable(csvTableName + "_ERROR");
         }
+
+        #region " Add flag " 
+
+        protected void AddFlag(string flagName) {
+            if(errorFlags==null)
+                errorFlags = new Dictionary<string, int>();
+
+            if(errorFlags.ContainsKey(flagName)) {
+                errorFlags[flagName] += 1;
+            } else {
+                errorFlags.Add(flagName, 1);
+            }
+        }
+
+        public void AddFlag_HeaderRequiredMissing() {AddFlag("HeaderRequiredMissing");}
+
+        public void AddFlag_HeaderOptionalMissing() {AddFlag("HeaderOptionalMissing");}
+
+        public void AddFlag_HeaderNewWarning() {AddFlag("HeaderNewWarning");}
+
+        public void AddFlag_HeaderBadName() {AddFlag("HeaderBadName");}
+
+        public void AddFlag_HeaderPoorNameWarning() {AddFlag("HeaderPoorNameWarning");}
+
+        public void AddFlag_HeaderDuplicate() {AddFlag("HeaderDuplicate");}
+
+        public void AddFlag_DataFldTooFew() {AddFlag("DataFldTooFew");}
+
+        public void AddFlag_DataFldTooMany() {AddFlag("DataFldTooMany");}
+
+        public void AddFlag_ErrorOnLastRow() {AddFlag("ErrorOnLastRow");}
+
+        public void AddFlag_DataFldBadType() {AddFlag("DataFldBadType");}
+
+        #endregion
 
         #region " Helpers "
 

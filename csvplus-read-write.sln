@@ -5,6 +5,8 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "csvplus-read-write", "csvplus-read-write\csvplus-read-write.csproj", "{4A9F62BE-4F96-4C72-8E65-7B9348AA674D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "csvplus-read-write-test", "csvplus-read-write-test\csvplus-read-write-test.csproj", "{1A101974-BF22-4325-92F5-7E5606782CB3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{4A9F62BE-4F96-4C72-8E65-7B9348AA674D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4A9F62BE-4F96-4C72-8E65-7B9348AA674D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4A9F62BE-4F96-4C72-8E65-7B9348AA674D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1A101974-BF22-4325-92F5-7E5606782CB3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A101974-BF22-4325-92F5-7E5606782CB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A101974-BF22-4325-92F5-7E5606782CB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A101974-BF22-4325-92F5-7E5606782CB3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
