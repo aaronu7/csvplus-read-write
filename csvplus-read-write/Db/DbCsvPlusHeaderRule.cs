@@ -1,8 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿/****************************** DbCsvPlusHeaderRule ******************************\
+Module Name:  DbCsvPlus
+Project:      This module is used in various ETL processes.
+Copyright (c) Aaron Ulrich.
+
+
+DbCsvPlusHeaderRule is used to help process column data based on expected details (DataType & Format)
+
+
+This source is subject to the Apache License Version 2.0, January 2004
+See http://www.apache.org/licenses/.
+All other rights reserved.
+
+THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, 
+EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED 
+WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
+\***************************************************************************/
+
+using System;
 
 namespace csvplus_read_write.Db
 {

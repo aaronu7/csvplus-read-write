@@ -1,8 +1,22 @@
-﻿using System;
+﻿/****************************** DbCsvPlusRules ******************************\
+Module Name:  DbCsvPlus
+Project:      This module is used in various ETL processes.
+Copyright (c) Aaron Ulrich.
+
+
+DbCsvPlusRules is used to encapsulate the rules surrounding how the incoming CSV file will be parsed and errors observed.
+
+
+This source is subject to the Apache License Version 2.0, January 2004
+See http://www.apache.org/licenses/.
+All other rights reserved.
+
+THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, 
+EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED 
+WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
+\***************************************************************************/
+
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace csvplus_read_write.Db
 {
@@ -11,8 +25,9 @@ namespace csvplus_read_write.Db
         // Scrub Rules
         public bool discardOnToFewDataFlds = false;   // disard the datarow if it has fewer data flds then expected by the header  -- append empty data if false
         public bool discardOnToManyDataFlds = true;   // disard the datarow if it has to many data flds                            -- discard data overflow if false
-                                                      //public string purgeHeaders = "";              // ex. Legacy HR had "Column1" with no data under it
-                                                      //public bool   purgeHeaderBlanks = true;       // remove any headers with blank values
+        //public string purgeHeaders = "";              // ex. Legacy HR had "Column1" with no data under it
+        //public bool   purgeHeaderBlanks = true;       // remove any headers with blank values
+
         public bool keepHeaderDuplicates = true;
         public bool keepHeaderBadnames = true;
 

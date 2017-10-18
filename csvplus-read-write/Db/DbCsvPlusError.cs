@@ -1,4 +1,24 @@
-﻿using System;
+﻿/****************************** DbCsvPlusError ******************************\
+Module Name:  DbCsvPlus
+Project:      This module is used in various ETL processes.
+Copyright (c) Aaron Ulrich.
+
+
+DbCsvPlusError is used to record and store error information when reading a CSV file.
+- Contains an Error datatable to store exact record state of problem entries.
+- Contains a lookup of error flags (and counts) to give an overview of the problems.
+
+
+This source is subject to the Apache License Version 2.0, January 2004
+See http://www.apache.org/licenses/.
+All other rights reserved.
+
+THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, 
+EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED 
+WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
+\***************************************************************************/
+
+using System;
 using System.Data;
 using System.Collections.Generic;
 

@@ -1,10 +1,10 @@
-﻿/****************************** DbCsv ******************************\
-Module Name:  DbCsv
+﻿/****************************** DbCsvPlus ******************************\
+Module Name:  DbCsvPlus
 Project:      This module is used in various ETL processes.
 Copyright (c) Aaron Ulrich.
 
 
-DbCSV offers the option of following enhancements to regular CSV file reading/writing:
+DbCsvPlus offers the option of following enhancements to regular CSV file reading/writing:
 - DataType retention
 - Error details during csv data reads.
 - Rules to handle validation of data contents (ex. expected headers)
@@ -38,10 +38,261 @@ namespace csvplus_read_write.Db
     {
         #region " SaveDataTable "
 
+        #region " Helpers "
+
+        # region " Append "
+
+        static public void Append(ref string val, string append, string div) {
+            Append(ref val, append, div, true);
+        }
+
+		static public void Append(ref string val, string append, string div, bool IgnoreBlank) {
+            Append(ref val, append, div, true, false);
+		}
+
+		static public void Append(ref string val, string append, string div, bool IgnoreBlank, bool ForceDiv) {
+            if((append != "") || (IgnoreBlank == false)) {
+			    if(val == "") {
+
+                    if((ForceDiv == true) && (append == ""))
+				        val = div;
+                    else
+                        val = append;
+
+			    } else {
+
+
+                    if((ForceDiv == true) && (append == "")) {
+                        if(val.EndsWith(div) == true) {
+				            val = val + div;
+                        } else {
+                            val = val + div + div;
+                        }
+
+                    } else {
+                        if(val.EndsWith(div) == true) {
+                            val = val + append;
+
+                        } else {
+                            val = val + div + append;
+                        }
+                    }
+
+
+
+
+                    /*
+                    if(val.EndsWith(div) == true) {
+                        if((ForceDiv == true) && (append == ""))
+                            val = val + div;
+                        else
+                            val = val + append;
+
+                    } else {
+                        val = val + div + append;
+                    }
+                    */
+
+
+                }
+            }
+		}
+
+        # endregion
+
+        # region " Contains "
+
+        static public bool Contains(string[] StringSet, string Match, bool IgnoreCase) {
+            bool res = false;
+            foreach(string val in StringSet) {
+                if(!IgnoreCase && val.Trim() == Match) {
+                    res = true;
+                    break;
+                } else if(val.Trim().ToLower() == Match.ToLower()) {
+                    res = true;
+                    break;
+                }
+            }
+            return res;
+        }
+
+        # endregion
+
+        #endregion
+
+        static public void QuickSaveDataTable(DataTable oDt, string sFolderPath, bool HasHeader, bool HasDataType) {
+            DbCsvPlus.SaveDataTable(oDt, sFolderPath, HasHeader, HasDataType, false, true, null, ".csv");
+        }
+        static public void QuickSaveDataTable(DataSet oDs, string sFolderPath, bool HasHeader, bool HasDataType) {
+            DbCsvPlus.SaveDataTable(oDs, sFolderPath, HasHeader, HasDataType, false, true, null, ".csv");
+        }
+
+        static public void SaveDataTable(DataSet oDs, string sFolderPath, bool HasHeader, bool HasDataType, bool RetainNewLine, bool ForceAllStringQuotes, string[] ForceSelectStringQuotes, string extension) {
+            foreach(DataTable oDt in oDs.Tables) {
+                SaveDataTable(oDt, sFolderPath, HasHeader, HasDataType, RetainNewLine, ForceAllStringQuotes, ForceSelectStringQuotes, extension);
+            }
+        }
+        static public void SaveDataTable(DataTable oDt, string sFolderPath, bool HasHeader, bool HasDataType, bool RetainNewLine, bool ForceAllStringQuotes, string[] ForceSelectStringQuotes, string extension) {
+            SaveDataTable(oDt, "", "", "", sFolderPath, HasHeader, HasDataType, RetainNewLine, ForceAllStringQuotes, ForceSelectStringQuotes, extension);
+        }
+
+        static public void SaveDataTable(DataTable oDt, string sFolderPath, string tablename, bool HasHeader, bool HasDataType, bool RetainNewLine, bool ForceAllStringQuotes, string[] ForceSelectStringQuotes, string extension) {
+            SaveDataTable(oDt, tablename, "", "", sFolderPath, HasHeader, HasDataType, RetainNewLine, ForceAllStringQuotes, ForceSelectStringQuotes, extension);
+        }
+
+        /// <summary>
+        /// This function will output a DataTable to a CSV file.
+        /// </summary>
+        /// <param name="oDt">The input datatable to be saved.</param>
+        /// <param name="tablename">The tablename to use when naming the file.</param>
+        /// <param name="where">If set then this will limit the rows saved to the file (ex. use to create date-range splits for large files).</param>
+        /// <param name="order">If set then this will force an order on the rows saved.</param>
+        /// <param name="folderPath">The directory path to save this file to.</param>
+        /// <param name="hasHeader">If true then output a ColumnName header line.</param>
+        /// <param name="hasDataType">If true then output a DataType header line.</param>
+        /// <param name="retainNewLine">If false then any newline characters in strings will be stripped during output.</param>
+        /// <param name="forceAllStringQuotes">If true then ALL columns of DataType string will be quoated.</param>
+        /// <param name="forceSelectStringQuotes">Set to null to ignore. When this array is set then only the specified columns will be quoted.</param>
+        /// <param name="extension">The extension to use when naming the output file.</param>
+        static public void SaveDataTable(DataTable oDt, string tablename, string where, string order, string folderPath, bool hasHeader, bool hasDataType, bool retainNewLine, bool forceAllStringQuotes, string[] forceSelectStringQuotes, string extension)
+        {
+            extension = extension.Trim().Trim('.');
+
+            if(oDt == null) {
+                System.Console.WriteLine("Saving null DataTable");
+            } else {
+                string sFile    = "";
+                string sNewLine = ""; //"\n\r"
+                string sDelim   = ","; 
+                //System.Console.WriteLine("SaveToFile: Start");
+
+                bool streamError = false;
+            
+                string sFilePath = "";
+                //if(System.IO.File.Exists(sFolderPath)) {
+                    // Filename given
+                //    sFilePath = sFolderPath;
+                //} else {
+                    // Assume directory
+                    try {
+                        if(System.IO.Directory.Exists(folderPath) == false)
+                            System.IO.Directory.CreateDirectory(folderPath);
+                    } catch {
+                        streamError = true;
+                    }
+
+
+                    if (tablename == "")
+                        tablename = oDt.TableName;
+
+                    sFilePath = folderPath + "\\" + tablename + "." + extension;
+                //}
+
+                TextWriter tw = null;
+
+                try {
+                    tw = new StreamWriter(sFilePath);
+                } catch (Exception ex) {
+                    streamError = true;
+                    System.Console.WriteLine("CSV SaveToFile Error: " + ex.Message);
+                }
+
+                if(!streamError) {
+                    //----------------------------------------------------
+                    // Add table headers going cell by cell
+                    //
+                    if(hasHeader == true) {
+                        foreach(DataColumn ocol in oDt.Columns) {
+                            Append(ref sFile, ocol.ColumnName, sDelim, false, true);
+                        }
+                        tw.WriteLine(sFile + sNewLine);
+                        sFile = "";
+                    }
+
+                    if(hasDataType == true) {
+                        foreach(DataColumn ocol in oDt.Columns) {
+                            Append(ref sFile, ocol.DataType.ToString(), sDelim, false, true);
+                        }
+                        tw.WriteLine(sFile + sNewLine);
+                        sFile = "";
+                    }
+
+                    DataRow[] oRowSet = oDt.Select(where, order);
+
+                    foreach(DataRow orow in oRowSet) {
+                        //if((string)orow["Report_Name"] == "Historical Entry") {
+                        //    int a = 1;
+                        //}
+
+                        foreach(DataColumn ocol in oDt.Columns) {
+                            string val = DbHelper.GetValueAsString(orow[ocol]);
+
+                            if(orow[ocol].GetType().ToString() == "System.String") {
+                        
+                                if(retainNewLine == true) {
+                                    // encrpyt line feeds
+                                    val = val.Replace("\n", "(\\n)").Replace("\r", "(\\n)").Replace("\"", "\"\"");
+                                } else {
+                                    // strip linefeeds
+                                    val = val.Replace("\n", "").Replace("\r", "").Replace("\"", "\"\"");
+                                }
+
+                                if(forceAllStringQuotes)
+                                    val = "\"" + val + "\"";
+                                else if(forceSelectStringQuotes!=null && forceSelectStringQuotes.Length > 0 && Contains(forceSelectStringQuotes, ocol.ColumnName, false))
+                                    val = "\"" + val + "\"";
+
+                            } else if (orow[ocol].GetType().ToString() == "System.Boolean") {
+                                if(val != "") {
+                                    if(val.ToLower() == "true")
+                                        val = "1";
+                                    else if(val.ToLower() == "false")
+                                        val = "0";
+                                }
+
+                            } else if (orow[ocol].GetType().ToString() == "System.DateTime") {
+                                if(val != "") {
+                                    DateTime oDate = (DateTime)orow[ocol];
+                                    if(oDate==DateTime.MinValue || oDate==DateTime.MaxValue) {
+                                        // NULL Date
+                                        val = "";
+                                    } else {
+                                        //val = oDate.Day + "/" + oDate.Month + "/" + oDate.Year;
+                                    }
+                                }
+                            }
+
+                            Append(ref sFile, val, sDelim, false, true);
+                        }
+                        if(sFile.EndsWith(sDelim) == true) {
+                            // remove the last NULL delim
+                            sFile = sFile.Substring(0, sFile.Length - 1);
+                        }
+
+                        tw.WriteLine(sFile + sNewLine);
+                        sFile = "";
+                    }
+
+                    tw.Close();
+                }
+            }
+        }
+
         #endregion
 
 
         #region " LoadDataTable "
+
+        /// <summary>
+        /// This is a simplified CSV load function to quickly load the data (no error checking or rules)
+        /// </summary>
+        /// <param name="filePath">The path to the desired file.</param>
+        /// <param name="HasHeader">Is there a header line in the csv.</param>
+        /// <param name="HasDataType">Is there a datatype line in the csv.</param>
+        /// <returns></returns>
+        static public DataTable QuickLoadDataTable(string filePath, bool HasHeader, bool HasDataType) {
+            return DbCsvPlus.LoadDataTable(filePath, null, HasHeader, HasDataType, false, ',', null, null);
+        }
 
         #region " LoadDataTableFromCsvString - From a data string "
 
@@ -289,7 +540,7 @@ namespace csvplus_read_write.Db
 
         static private bool ProccessLine_DiscardCheck(DbCsvPlusError oError, DbCsvPlusRules oRules, Int32 iColCount, string[] flds)
         {
-            bool IsDiscard = false;
+            bool isDiscard = false;
 
             // ***** this condition is probably redundant ******
             //if(iColCount!=0 && hasColumn1 && iColCount > flds.Length) {
@@ -301,10 +552,9 @@ namespace csvplus_read_write.Db
             {
                 // We have fewer fields in this row then we have columns ...
                 //      this occurs in some older BCEsis entries ...
+                isDiscard = false;
                 if (oRules != null)
-                    IsDiscard = oRules.discardOnToFewDataFlds;
-                else
-                    IsDiscard = false;
+                    isDiscard = oRules.discardOnToFewDataFlds;                    
 
                 if (oError != null) {
                     oError.AddFlag_DataFldTooFew();
@@ -314,10 +564,9 @@ namespace csvplus_read_write.Db
             } else if (iColCount != 0 && iColCount < flds.Length) {
                 // We have more fields then we have columns ... no choice but to discard this entry
                 //      this entry probably has a bad comma causing an extra field
+                isDiscard = false;
                 if (oRules != null)
-                    IsDiscard = oRules.discardOnToManyDataFlds;
-                else
-                    IsDiscard = false;
+                    isDiscard = oRules.discardOnToManyDataFlds;                    
 
                 if (oError != null) {
                     oError.AddFlag_DataFldTooMany();
@@ -325,7 +574,7 @@ namespace csvplus_read_write.Db
                 }
             }
 
-            return IsDiscard;
+            return isDiscard;
         }
 
         #endregion

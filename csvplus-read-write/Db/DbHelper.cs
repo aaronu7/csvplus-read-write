@@ -1,10 +1,92 @@
-﻿using System;
+﻿/****************************** DbHelper ******************************\
+Module Name:  DbCsvPlus
+Project:      This module is used in various ETL processes.
+Copyright (c) Aaron Ulrich.
+
+
+DbHelper contains various core functions to assist this process (ex. GetValueFromString)
+
+
+This source is subject to the Apache License Version 2.0, January 2004
+See http://www.apache.org/licenses/.
+All other rights reserved.
+
+THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, 
+EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED 
+WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
+\***************************************************************************/
+
+using System;
 using System.Data;
 
 namespace csvplus_read_write.Db
 {
     static public class DbHelper
     {
+        # region " GetValueAsString "
+
+        static public string GetValueAsString(DataRow oRow, string sCol) {
+            string sVal = "";
+            if(oRow != null) {
+                if(oRow.Table.Columns.Contains(sCol)) {
+                    sVal = GetValueAsString(oRow[sCol]);
+                }
+            }
+            return sVal;
+        }
+
+        static public string GetValueAsString(object value) {
+            return GetValueAsString(value, "");
+        }
+
+        static public string GetValueAsString(object value, string SurroundStringDelim) {
+            string val = "";
+
+            
+            if(value!=null && value != DBNull.Value) {
+                string sType = value.GetType().ToString();
+
+                if(sType == "System.String") {
+                    if((string)value != "") {
+                        val = ((string)value);
+                        val = SurroundStringDelim + val + SurroundStringDelim;
+                    }
+
+                } else if(value.GetType().ToString() == "System.Int32") {
+                    val = ((Int32)value).ToString();
+
+                } else if(value.GetType().ToString() == "System.UInt32") {
+                    val = ((UInt32)value).ToString();
+
+                } else if(value.GetType().ToString() == "System.Int64") {
+                    val = ((Int64)value).ToString();
+
+                } else if(value.GetType().ToString() == "System.UInt64") {
+                    val = ((UInt64)value).ToString();
+
+                } else if(value.GetType().ToString() == "System.DateTime") {
+                    val = ((DateTime)value).ToString();
+
+                } else if(value.GetType().ToString() == "System.Double") {
+                    Double dblVal = (Double)value;
+                    if(dblVal == Double.NaN || dblVal == Double.MaxValue || dblVal == Double.MinValue)
+                        val = "";
+                    else
+                        val = dblVal.ToString();
+
+                } else if(value.GetType().ToString() == "System.Boolean") {
+                    val = ((Boolean)value).ToString();
+
+                } else if(value.GetType().ToString() == "System.Byte") {
+                    val = ((Byte)value).ToString();
+                }
+            }
+
+            return val;
+        }
+
+        # endregion
+
         #region " GetValueFromString "
 
         // This is the slower, but safer version
