@@ -32,7 +32,6 @@ Advanced Usage Example:
 		"^[C][H][Q][#](?<P1>[0-9]{5})[-](?<P2>[0-9]{10})$" + "," + 
 		"";
 
-
 	DbCsvPlusError oError = new DbCsvPlusError();
 	
 	DataTable oDt = DbCsvPlus.LoadDataTable(tbFileName.Text, null, true, false, false, ',', oRules, oError);
