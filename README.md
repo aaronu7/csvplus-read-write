@@ -4,14 +4,14 @@ This module was designed as a component for a larger ETL system in which control
 
 Where this fits in the ETL (EXTRACT / scrub / clean&reduce / TRANSFORM / LOAD):
 - It is a pre-processing algorithm which runs when loading the "raw unverified" csv extract data.
-- It is usually runs when loading data into the clean&reduce algorithm, but running it immediately after an extract can be used to re-trigger the extract.
-- Its purpose of this is to detect any unexpected or problematic data early on in the process. 
+- It is usually run when loading data into the clean&reduce algorithm, but running it immediately after an extract can be used to re-trigger the extract.
+- Its purpose is to detect any unexpected or problematic data early on in the ETL process. 
 - Any problematic data is removed and isolated in a separate error table which can be analysed at a later point in the ETL.
 
 Key Features:
 - DataType retention: an optional DataType line under the column header is available for Load/Save operations.
 - Issue detection: too many fields, too few fields, bad datatypes and formats, unexpected/missing columns.
-- Issue isolation: any datalines with a detect issue are separated from the data and isolated in an error table.
+- Issue isolation: any datalines with detected issues are separated from the data and isolated in an error table.
 
 
 Project Notes:
