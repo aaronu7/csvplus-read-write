@@ -2,7 +2,7 @@
 
 This module was designed as a component for a larger ETL system in which control over various extract sources is limited and changes/errors are a frequent occurrence; it is currently being used in a production ETL system to help verify the integrity of input data through a web-service API. 
 
-Where this fits in the ETL (EXTRACT / scrub / clean&reduce / TRANSFORM / LOAD):
+Where this fits in the ETL (EXTRACT / scrub / blend / clean&reduce / TRANSFORM / LOAD):
 - It is a pre-processing algorithm which runs when loading the "raw unverified" csv extract data.
 - It is usually run when loading data into the clean&reduce algorithm, but running it immediately after an extract can be used to re-trigger the extract.
 - Its purpose is to detect any unexpected or problematic data early on in the ETL process. 
