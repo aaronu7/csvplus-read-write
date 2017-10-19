@@ -58,7 +58,7 @@
             // 
             this.tbFileName.Location = new System.Drawing.Point(217, 145);
             this.tbFileName.Name = "tbFileName";
-            this.tbFileName.Size = new System.Drawing.Size(1246, 31);
+            this.tbFileName.Size = new System.Drawing.Size(1279, 31);
             this.tbFileName.TabIndex = 1;
             // 
             // tbMsg
@@ -68,11 +68,11 @@
             this.tbMsg.Location = new System.Drawing.Point(249, 23);
             this.tbMsg.Multiline = true;
             this.tbMsg.Name = "tbMsg";
-            this.tbMsg.Size = new System.Drawing.Size(1138, 84);
+            this.tbMsg.Size = new System.Drawing.Size(1247, 84);
             this.tbMsg.TabIndex = 3;
-            this.tbMsg.Text = "Test cases can be found in the UnitTests folder and are viewable with the \"NUnit " +
-    "3 Test Adapter\" extension. Use this tool to browse for test data and observe the" +
-    " outputs.";
+            this.tbMsg.Text = "Test cases can be found in the UnitTests folder and are viewable in the Test Expl" +
+    "orer with the \"NUnit 3 Test Adapter\" extension. Use this tool to browse for test" +
+    " data and observe the outputs.";
             // 
             // gridData
             // 
@@ -160,7 +160,7 @@
             this.tbDataMsg.Location = new System.Drawing.Point(249, 199);
             this.tbDataMsg.Multiline = true;
             this.tbDataMsg.Name = "tbDataMsg";
-            this.tbDataMsg.Size = new System.Drawing.Size(1138, 76);
+            this.tbDataMsg.Size = new System.Drawing.Size(1247, 76);
             this.tbDataMsg.TabIndex = 13;
             // 
             // frmTest
