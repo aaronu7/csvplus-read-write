@@ -1,15 +1,15 @@
 # csvplus-read-write
 
-This module was designed as a component for a larger ETL system in which control over various extract sources is limited and changes/errors are constant; it is currently being used in a production ETL system to help verify the integrity of input data through a web-service API. 
+This module was designed as a component for a larger ETL system in which control over various extract sources is limited and changes/errors are a frequent occurrence; it is currently being used in a production ETL system to help verify the integrity of input data through a web-service API. 
 
 Where this fits in the ETL (EXTRACT / scrub / clean&reduce / TRANSFORM / LOAD):
 	
-	This is a pre-processing algorithm which runs when loading the "raw unverified" csv extract data into the clean&reduce algorithm. The purpose of this is to detect any unexpected or problematic data early on in the process. Any problematic data is removed and isolated in a seperate error table which can be analysed at a later point in the ETL.
+	This is a pre-processing algorithm which runs when loading the "raw unverified" csv extract data into the clean&reduce algorithm. The purpose of this is to detect any unexpected or problematic data early on in the process. Any problematic data is removed and isolated in a separate error table which can be analysed at a later point in the ETL.
 
 Key Features:
 - DataType retention: an optional DataType line under the column header is available for Load/Save operations.
 - Issue detection: too many fields, too few fields, bad datatypes and formats, unexpected/missing columns.
-- Issue isolation: any datalines with a detect issue are seperated from the data and isolated in an error table.
+- Issue isolation: any datalines with a detect issue are separated from the data and isolated in an error table.
 
 
 Project Notes:
@@ -36,3 +36,8 @@ Advanced Usage Example:
 	DbCsvPlusError oError = new DbCsvPlusError();
 	
 	DataTable oDt = DbCsvPlus.LoadDataTable(tbFileName.Text, null, true, false, false, ',', oRules, oError);
+	
+	
+TODO:
+- Allow table rules to be passed as JSON configuration files.
+- Implement automated error handling as part of the rules.

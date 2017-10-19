@@ -18,7 +18,7 @@ WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
 
 using System;
 
-namespace csvplus_read_write.Db
+namespace csvplus_read_write.Db.Csv
 {
     public class DbCsvHeaderRule
     {

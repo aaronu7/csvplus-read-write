@@ -5,7 +5,7 @@ using System.Data;
 using System.Collections;
 using System.Linq;
 
-using csvplus_read_write.Db;
+using csvplus_read_write.Db.Csv;
 
 namespace csvplus_read_write_test.UnitTests
 {

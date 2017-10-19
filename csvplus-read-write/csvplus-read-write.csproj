@@ -46,10 +46,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Db\DbCsvPlusError.cs" />
-    <Compile Include="Db\DbCsvPlusRules.cs" />
-    <Compile Include="Db\DbCsvPlusHeaderRule.cs" />
-    <Compile Include="Db\DbCsvPlus.cs" />
+    <Compile Include="Db\Csv\DbCsvPlusError.cs" />
+    <Compile Include="Db\Csv\DbCsvPlusRules.cs" />
+    <Compile Include="Db\Csv\DbCsvPlusHeaderRule.cs" />
+    <Compile Include="Db\Csv\DbCsvPlus.cs" />
     <Compile Include="Db\DbHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
