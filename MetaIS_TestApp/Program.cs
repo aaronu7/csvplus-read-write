@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace csvplus_read_write_test
+namespace MetaIS_TestApp
 {
     static class Program
     {

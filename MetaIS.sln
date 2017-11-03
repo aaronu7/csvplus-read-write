@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "csvplus-read-write", "csvplus-read-write\csvplus-read-write.csproj", "{4A9F62BE-4F96-4C72-8E65-7B9348AA674D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MetaIS", "MetaIS\MetaIS.csproj", "{4A9F62BE-4F96-4C72-8E65-7B9348AA674D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "csvplus-read-write-test", "csvplus-read-write-test\csvplus-read-write-test.csproj", "{1A101974-BF22-4325-92F5-7E5606782CB3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MetaIS_TestApp", "MetaIS_TestApp\MetaIS_TestApp.csproj", "{1A101974-BF22-4325-92F5-7E5606782CB3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MetaIS_Test", "MetaIS_Test\MetaIS_Test.csproj", "{BBB57684-A879-48D5-A2E5-FF07E3BD4515}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{1A101974-BF22-4325-92F5-7E5606782CB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1A101974-BF22-4325-92F5-7E5606782CB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1A101974-BF22-4325-92F5-7E5606782CB3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BBB57684-A879-48D5-A2E5-FF07E3BD4515}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BBB57684-A879-48D5-A2E5-FF07E3BD4515}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BBB57684-A879-48D5-A2E5-FF07E3BD4515}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BBB57684-A879-48D5-A2E5-FF07E3BD4515}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

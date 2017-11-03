@@ -8,9 +8,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-using csvplus_read_write.Db.Csv;
+using MetaIS.Dbs.Csv;
 
-namespace csvplus_read_write_test
+namespace MetaIS_TestApp
 {
     public partial class frmTest : Form
     {

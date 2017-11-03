@@ -7,8 +7,8 @@
     <ProjectGuid>{4A9F62BE-4F96-4C72-8E65-7B9348AA674D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>csvplus_read_write</RootNamespace>
-    <AssemblyName>csvplus-read-write</AssemblyName>
+    <RootNamespace>MetaIS</RootNamespace>
+    <AssemblyName>MetaIS</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -46,11 +46,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Db\Csv\DbCsvPlusError.cs" />
-    <Compile Include="Db\Csv\DbCsvPlusRules.cs" />
-    <Compile Include="Db\Csv\DbCsvPlusHeaderRule.cs" />
-    <Compile Include="Db\Csv\DbCsvPlus.cs" />
-    <Compile Include="Db\DbHelper.cs" />
+    <Compile Include="Dbs\Csv\DbCsvPlusError.cs" />
+    <Compile Include="Dbs\Csv\DbCsvPlusRules.cs" />
+    <Compile Include="Dbs\Csv\DbCsvPlusHeaderRule.cs" />
+    <Compile Include="Dbs\Csv\DbCsvPlus.cs" />
+    <Compile Include="Dbs\DbHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

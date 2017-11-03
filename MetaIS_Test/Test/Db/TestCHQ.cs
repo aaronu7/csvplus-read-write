@@ -5,13 +5,15 @@ using System.Data;
 using System.Collections;
 using System.Linq;
 
-using csvplus_read_write.Db.Csv;
+using MetaIS.Dbs.Csv;
 
-namespace csvplus_read_write_test.UnitTests
+namespace MetaIS_Test.Test.Db
 {
     [TestFixture]
     public class TestCHQ
     {
+        const string fileSubPath = @"Test/Db/Files/";
+
         [SetUp] public void Setup() {}
         [TearDown] public void TestTearDown() {}
 
@@ -23,27 +25,27 @@ namespace csvplus_read_write_test.UnitTests
                 DbCsvPlusError oError = null;
 
                 // No Rules or Error --- loading data without any rule or error objects (aka QuickLoad)
-                yield return new TestCaseData("NULL_RULES_ERROR", null, null, "UnitTests/Files/chq_badcomma.csv", 150, 0, "");    
+                yield return new TestCaseData("NULL_RULES_ERROR", null, null, fileSubPath + "chq_badcomma.csv", 150, 0, "");    
 
                 // NORMAL: Normal and properly formed CSV file
                 oRulesCHQ = new DbCsvPlusRules(true, true, false, "Date,Description,Amount", "Account Number,Currency");                    
                 oError = new DbCsvPlusError();
-                yield return new TestCaseData("NORMAL", oRulesCHQ, oError, "UnitTests/Files/chq.csv", 150, 0, "");           
+                yield return new TestCaseData("NORMAL", oRulesCHQ, oError, fileSubPath + "chq.csv", 150, 0, "");           
 
                 // INCOMPLETE: In this case the last entry is incomplete. This will often occur with a partial/failed extract.
                 oRulesCHQ = new DbCsvPlusRules(true, true, false, "Date,Description,Amount", "Account Number,Currency");
                 oError = new DbCsvPlusError();
-                yield return new TestCaseData("INCOMPLETE", oRulesCHQ, oError, "UnitTests/Files/chq_badRow.csv", 149, 1, "DataFldTooFew,ErrorOnLastRow");
+                yield return new TestCaseData("INCOMPLETE", oRulesCHQ, oError, fileSubPath + "chq_badRow.csv", 149, 1, "DataFldTooFew,ErrorOnLastRow");
 
                 // COLUMN_RENAME: This will appear as a missing column with a new column added
                 oRulesCHQ = new DbCsvPlusRules(true, true, false, "Date,Description,Amount2", "Account Number,Currency");
                 oError = new DbCsvPlusError();
-                yield return new TestCaseData("COLUMN_RENAME", oRulesCHQ, oError, "UnitTests/Files/chq.csv", 150, 0, "HeaderNewWarning,HeaderRequiredMissing");
+                yield return new TestCaseData("COLUMN_RENAME", oRulesCHQ, oError, fileSubPath + "chq.csv", 150, 0, "HeaderNewWarning,HeaderRequiredMissing");
 
                 // NON_QUOTED_COMMA: The output of some systems occasionally have commas in a non-quoted text string... this detects and discards those entries.
                 oRulesCHQ = new DbCsvPlusRules(true, true, false, "Date,Description,Amount", "Account Number,Currency");
                 oError = new DbCsvPlusError();
-                yield return new TestCaseData("NON_QUOTED_COMMA", oRulesCHQ, oError, "UnitTests/Files/chq_badcomma.csv", 149, 1, "DataFldTooMany");
+                yield return new TestCaseData("NON_QUOTED_COMMA", oRulesCHQ, oError, fileSubPath + "chq_badcomma.csv", 149, 1, "DataFldTooMany");
                 
                 // VERIFY_TYPES_OK: Add verification rules via data type and format.
                 oRulesCHQ = new DbCsvPlusRules(true, true, false, "Date,Description,Amount", "Account Number,Currency");
@@ -53,7 +55,7 @@ namespace csvplus_read_write_test.UnitTests
                     "^[C][H][Q][#](?<P1>[0-9]{5})[-](?<P2>[0-9]{10})$" + "," +    // this will create 3 capture groups (all-index0, P1-index1, P2-index2) it also forces a specific number length
                     "";
                 oError = new DbCsvPlusError();
-                yield return new TestCaseData("VERIFY_TYPES_OK", oRulesCHQ, oError, "UnitTests/Files/chq.csv", 150, 0, "");
+                yield return new TestCaseData("VERIFY_TYPES_OK", oRulesCHQ, oError, fileSubPath + "chq.csv", 150, 0, "");
                 
                 // VERIFY_TYPES_FAIL: Add verification rules via data type and format.
                 oRulesCHQ = new DbCsvPlusRules(true, true, false, "Date,Description,Amount", "Account Number,Currency");
@@ -63,7 +65,7 @@ namespace csvplus_read_write_test.UnitTests
                     "^[C][H][Q][#](?<P1>[0-9]{5})[-](?<P2>[0-9]{10})$" + "," +    // this will create 3 capture groups (all-index0, P1-index1, P2-index2) it also forces a specific number length
                     "";
                 oError = new DbCsvPlusError();
-                yield return new TestCaseData("VERIFY_TYPES_FAIL", oRulesCHQ, oError, "UnitTests/Files/chq_badtype.csv", 147, 3, "DataFldBadType");
+                yield return new TestCaseData("VERIFY_TYPES_FAIL", oRulesCHQ, oError, fileSubPath + "chq_badtype.csv", 147, 3, "DataFldBadType");
                 
             }
         }
@@ -132,13 +134,13 @@ namespace csvplus_read_write_test.UnitTests
 
                 // SAVE_NO_RULES: No Rules or Error --- loading data without any rule or error objects .... 
                 //      we will assume clean data for the sake of testing the save
-                yield return new TestCaseData("SAVE_NO_RULES", "UnitTests/Files/chq.csv", "_chq_save", null, null);    
+                yield return new TestCaseData("SAVE_NO_RULES", fileSubPath + "chq.csv", "_chq_save", null, null);    
 
                 // SAVE_INCOMPLETE: In this case the last entry is incomplete. This will often occur with a partial/failed extract.
                 //      This example will save the data that has been "lightly processed" and then compare that with what was originally loaded (processing included)
                 oRulesCHQ = new DbCsvPlusRules(true, true, false, "Date,Description,Amount", "Account Number,Currency");
                 oError = new DbCsvPlusError();
-                yield return new TestCaseData("SAVE_INCOMPLETE", "UnitTests/Files/chq_badRow.csv", "_chq_badRow_save", oRulesCHQ, oError);
+                yield return new TestCaseData("SAVE_INCOMPLETE", fileSubPath + "chq_badRow.csv", "_chq_badRow_save", oRulesCHQ, oError);
             }
         }
 

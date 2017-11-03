@@ -19,7 +19,7 @@ WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
 using System;
 using System.Data;
 
-namespace csvplus_read_write.Db
+namespace MetaIS.Dbs
 {
     static public class DbHelper
     {

@@ -26,7 +26,7 @@ using System.Text;
 using System.Data;
 using System.IO;
 
-namespace csvplus_read_write.Db.Csv
+namespace MetaIS.Dbs.Csv
 {
     /// <summary>
     /// DbCSV offers the option of following enhancements to regular CSV file reading/writing:

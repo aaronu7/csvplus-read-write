@@ -1,4 +1,4 @@
-﻿namespace csvplus_read_write_test
+﻿namespace MetaIS_TestApp
 {
     partial class frmTest
     {

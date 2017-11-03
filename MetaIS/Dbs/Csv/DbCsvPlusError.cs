@@ -22,7 +22,7 @@ using System;
 using System.Data;
 using System.Collections.Generic;
 
-namespace csvplus_read_write.Db.Csv
+namespace MetaIS.Dbs.Csv
 {
     public class DbCsvPlusError
     {

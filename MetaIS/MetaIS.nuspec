@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>MetaIS.Dbs.Csv</id>
+    <version>1.0</version>
+    <title>MetaIS CSV Module</title>
+    <authors>Aaron Ulrich</authors>
+    <owners>Aaron Ulrich</owners>
+    <licenseUrl>https://github.com/aaronu7/csvplus-read-write/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/aaronu7/csvplus-read-write</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>This module offers CSV file load/save features with error detection and data type retention.</description>
+    <releaseNotes>Initial release.</releaseNotes>
+    <copyright>Copyright (c) 2017 "Aaron Ulrich &lt;ace@gis.ca&gt;"</copyright>
+	<language>en-US</language>
+    <tags>dbs csv preprocessing extract-error-detection</tags>
+  </metadata>
+</package>
