@@ -40,7 +40,7 @@ oRules.DataTypeFormats =
 
 DbCsvPlusError oError = new DbCsvPlusError();
 
-DataTable oDt = DbCsvPlus.LoadDataTable(tbFileName.Text, null, true, false, false, ',', oRules, oError);
+DataTable oDt = DbCsvPlus.LoadDataTable(csvFilePath, null, true, false, false, ',', oRules, oError);
 ```
 
 ## Developer Environment & Notes
@@ -48,7 +48,8 @@ DataTable oDt = DbCsvPlus.LoadDataTable(tbFileName.Text, null, true, false, fals
 - The following nunit versions were found to work best with Travis CI integration.
 ```sh
 PM> Install-Package NUnit -Version 3.6.1
-PM> In
+PM> Install-Package NUnit3TestAdapter -Version 3.7.0
+```
 
 #### Future Considerations
 - Allow table rules to be passed as JSON configuration files.
