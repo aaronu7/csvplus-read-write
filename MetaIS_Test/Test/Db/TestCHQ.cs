@@ -75,9 +75,9 @@ namespace MetaIS_Test.Test.Db
         //[ExpectedException(typeof(KeyNotFoundException))]
         [TestCaseSource("InputCsvLoadTest")]
         public void CsvLoadTest(string testName, DbCsvPlusRules oRules, DbCsvPlusError oError, string fileSubPath, int rowCount, int discardCount, string flagSet) {
-            fileSubPath = fileSubPath.Replace("/", @"\");
+            //fileSubPath = fileSubPath.Replace("/", @"\");
             string binFolderPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            string fullPath = binFolderPath + "\\" + fileSubPath;
+            string fullPath = binFolderPath + @"/" + fileSubPath;
 
             //DbCsvPlusError oError = new DbCsvPlusError(System.IO.Path.GetFileName(fullPath));
             DataTable oDt = DbCsvPlus.LoadDataTable(fullPath, null, true, false, false, ',', oRules, oError);

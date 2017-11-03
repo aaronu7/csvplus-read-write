@@ -1,9 +1,6 @@
 # csvplus-read-write
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT) 
-
-
-[![Build Status](https://travis-ci.org/aaronu7/saas-plugins.svg?branch=master)](https://travis-ci.org/aaronu7/saas-plugins) [![NuGet](https://img.shields.io/nuget/v/MetaIS.SaaS.Plugins.svg)](https://www.nuget.org/packages/MetaIS.SaaS.Plugins/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT) [![Build Status](https://travis-ci.org/aaronu7/csvplus-read-write.svg?branch=master)](https://travis-ci.org/aaronu7/csvplus-read-write) [![NuGet](https://img.shields.io/nuget/v/MetaIS.Dbs.Csv.svg)](https://www.nuget.org/packages/MetaIS.Dbs.Csv/)
 
 This module was designed as a component for a larger ETL system in which control over various extract sources is limited and changes/errors are a frequent occurrence; it is currently being used in a production ETL system to help verify the integrity of input data through a web-service API. 
 
