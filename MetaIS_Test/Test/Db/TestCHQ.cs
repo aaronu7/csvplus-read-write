@@ -147,9 +147,9 @@ namespace MetaIS_Test.Test.Db
         [Test]
         [TestCaseSource("InputCsvSaveTest")]
         public void CsvSaveTest(string testName, string inputSubPath, string outputTableName, DbCsvPlusRules oRules, DbCsvPlusError oError) {
-            inputSubPath = inputSubPath.Replace("/", @"\");
+            //inputSubPath = inputSubPath.Replace("/", @"\");
             string binFolderPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            string fullPath = binFolderPath + "\\" + inputSubPath;
+            string fullPath = binFolderPath + @"/" + inputSubPath;
 
             // No Rules or Error --- loading data without any rule or error objects .... 
             //      we will assume clean data for the sake of testing the save
