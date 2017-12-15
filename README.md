@@ -4,8 +4,8 @@
 
 # *** IMPORTANT - TravisCI is temporarily broken but it is passing in the deveopment environment ***
  - Moving to .NET Standard 2.0 broke mono compatibility in Travis CI. Standard 2.0 is necessary for a single library sharable between Core, UWP, and Framework.
- - There is a Framework 4.7.1 requirement on .NET Framework projects.
- - NUnit currently only supports up to .NET Standard 2.0.
+ - There is a Framework 4.7.1 requirement on .NET Framework projects -mono only supports up to 4.6.
+ - NUnit currently only supports up to .NET Standard 1.6.
 
 ## Features
  - DataType retention: an optional DataType line under the column header is available for Load/Save operations.
