@@ -1,9 +1,10 @@
-dist: trusty
-sudo: required
 language: csharp
-mono: none
-dotnet: 2.0.0
 solution: MetaIS.sln
+install:
+  - curl -L -o nuget.exe https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
+  - mono nuget.exe restore MetaIS.sln
+  - mono nuget.exe install NUnit.Runners -Version 3.6.1 -OutputDirectory testrunner
 script:
-  - dotnet restore
-  - dotnet build -c Release
+  - xbuild /p:Configuration=Release MetaIS.sln
+  - mono ./testrunner/NUnit.ConsoleRunner.3.6.1/tools/nunit3-console.exe ./MetaIS_Test/bin/Release/MetaIS_Test.dll
+  
