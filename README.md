@@ -2,11 +2,6 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT) [![Build Status](https://travis-ci.org/aaronu7/csvplus-read-write.svg?branch=master)](https://travis-ci.org/aaronu7/csvplus-read-write) [![NuGet](https://img.shields.io/nuget/v/MetaIS.Dbs.Csv.svg)](https://www.nuget.org/packages/MetaIS.Dbs.Csv/)
 
-# *** IMPORTANT - TravisCI is temporarily broken but it is passing in the deveopment environment ***
- - Moving to .NET Standard 2.0 broke mono compatibility in Travis CI. Standard 2.0 is necessary for a single library sharable between Core, UWP, and Framework.
- - There is a Framework 4.7.1 requirement on .NET Framework projects -mono only supports up to 4.6.
- - NUnit currently only supports up to .NET Standard 1.6.
-
 ## Features
  - DataType retention: an optional DataType line under the column header is available for Load/Save operations.
  - Issue detection: too many fields, too few fields, bad datatypes and formats, unexpected/missing columns.
